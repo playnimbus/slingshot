@@ -29,6 +29,11 @@ public class GameManager : MonoBehaviour
         camera.FollowShip(ship);
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape)) Application.LoadLevel(Application.loadedLevel);
+    }
+
     private void OnDestroy()
     {
         _instance = null;
