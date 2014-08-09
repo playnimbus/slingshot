@@ -104,7 +104,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 253cd4b8858084d45be04b2322968bdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravitationalForce: 100
+  turnForce: 100
+  speedForce: 400
 --- !u!58 &110788326
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -202,7 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35eebb2caa8fa564d9aa337bb50b388e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positioningTime: 1
+  positioningTime: 1.5
   planetBufferSize: 6
   shipBufferSize: 2
 --- !u!20 &213873969
@@ -503,8 +504,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   accelerationModifier: .100000001
-  minSpeed: 1
-  maxSpeed: 10
+  minSpeed: 5
+  minTurnSpeed: 2
 --- !u!114 &1293409031
 MonoBehaviour:
   m_ObjectHideFlags: 0
