@@ -4,26 +4,15 @@ using System.Collections;
 // Handles moving the ship forward in one direction
 public class ShipMovement : MonoBehaviour
 {
-    public float forwardSpeed;
-    public float maxStrafeSpeed;
-    [Range(0, 1)] public float strafeAcceleration;
-
-    private float strafeSpeed;
-
-    public Vector3 direction { get; set; }
-
-    // Temoporary setup
-    void Awake()
-    {
-        direction = Vector2.up;
-    }
-
-    public void MoveInDirection(Vector3 direction)
-    {
-        this.direction = direction;
-    }
-
-    private void Update()
+    [Range(0, 1)] public float accelerationModifier;
+    public float minSpeed = 1f;
+    public float maxSpeed = 10f;
+    
+    private float speed = 5f;
+    private float angle = Mathf.PI / 2f;
+    private float angleDelta = 0f;
+    
+    private void FixedUpdate()
     {
         HandleInput();
         Move();
@@ -37,27 +26,37 @@ public class ShipMovement : MonoBehaviour
 
             if (viewportPoint.x < 0.5f)
             {
-                strafeSpeed = Mathf.Lerp(strafeSpeed, -maxStrafeSpeed, strafeAcceleration);
+                angleDelta += accelerationModifier * Time.fixedDeltaTime;
             }
             else
             {
-                strafeSpeed = Mathf.Lerp(strafeSpeed, maxStrafeSpeed, strafeAcceleration);
+                angleDelta -= accelerationModifier * Time.fixedDeltaTime;
             }
         }
         else
         {
-            strafeSpeed = Mathf.Lerp(strafeSpeed, 0f, strafeAcceleration);
+            angleDelta = Mathf.MoveTowards(angleDelta, 0, accelerationModifier * Time.fixedDeltaTime);
         }
+
+        angleDelta = Mathf.Clamp(angleDelta, -Time.fixedDeltaTime * Mathf.PI / 2f, Time.fixedDeltaTime * Mathf.PI / 2f);
+        angle += angleDelta;
+        while (angle < 0f) angle += Mathf.PI * 2;
+        while (angle > Mathf.PI * 2) angle -= Mathf.PI * 2;
     }
 
     private void Move()
     {
-        Vector2 forwardAmount = direction * forwardSpeed;
-        Vector2 strafeAmount = Utils.PerpindicularVector(direction) * strafeSpeed;
-        Vector2 deltaPosition = (forwardAmount + strafeAmount) * Time.fixedDeltaTime;
+        float x = Mathf.Cos(angle);
+        float y = Mathf.Sin(angle);
+        Vector3 positionDelta = new Vector3(x, y);
+        positionDelta *= speed * Time.fixedDeltaTime;
 
-        transform.position = (Vector2)transform.position + deltaPosition;
-        //rigidbody2D.MovePosition((Vector2)transform.position + deltaPosition);
-        transform.up = deltaPosition;
+        rigidbody2D.MovePosition(transform.position + positionDelta);
+        transform.up = positionDelta;
+    }
+
+    public void SetSpeedModifier(float value)
+    {
+        speed = Mathf.Clamp(speed, minSpeed, maxSpeed);
     }
 }

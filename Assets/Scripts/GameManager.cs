@@ -13,7 +13,9 @@ public class GameManager : MonoBehaviour
 
     private SceneManager scene;
     private GameCamera camera;
-    private Ship ship;
+    private Ship _ship;
+
+    public Ship ship { get { return _ship; } }
 
     private void Awake() 
     {
@@ -21,12 +23,12 @@ public class GameManager : MonoBehaviour
 
         scene = FindObjectOfType<SceneManager>();
         camera = FindObjectOfType<GameCamera>();
-        ship = FindObjectOfType<Ship>();
+        _ship = FindObjectOfType<Ship>();
 	}
 
     void Start()
     {
-        camera.FollowShip(ship);
+        camera.FollowShip(_ship);
     }
 
     void Update()
@@ -38,16 +40,14 @@ public class GameManager : MonoBehaviour
     {
         _instance = null;
     }
-
-    public void ReachedPlanet(Planet planet)
+    
+    public void EnterPlanet(Planet planet)
     {
-        camera.ShowPlanet(planet);
-        ship.OrbitPlanet(planet);
+        camera.ShowPlanet(planet);   
     }
 
-    public void LaunchInDirection(Vector3 direction)
-    {        
-        ship.MoveInDirection(direction);
-        camera.FollowShip(ship); 
+    public void ExitPlanet(Planet planet)
+    {
+        camera.FollowShip(ship);
     }
 }

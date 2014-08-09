@@ -44,7 +44,7 @@ public class ShipOrbit : MonoBehaviour
             time += Time.deltaTime;
             float percent = (float)Utils.CubicEaseOut(time, 0, 1, positioningTime);
 
-            float easedRadius = Mathf.Lerp(startRadius, planet.radius, percent);
+            float easedRadius = Mathf.Lerp(startRadius, /*planet.radius*/startRadius, percent);
             angle += degreesPerSecond * directionModifier * Mathf.Deg2Rad * Time.deltaTime;
             Vector3 shipToPlanetNormal = Utils.Vector2FromRadians(angle);
             Vector3 position = shipToPlanetNormal * easedRadius + planet.transform.position;
@@ -82,7 +82,7 @@ public class ShipOrbit : MonoBehaviour
                 Vector3 shipToPlanet = planet.transform.position - transform.position;
                 if (Vector3.Angle(direction, shipToPlanet) > 90 && Vector3.Angle(direction, transform.up) < 90)
                 {
-                    GameManager.instance.LaunchInDirection(direction.normalized);
+                    //GameManager.instance.LaunchInDirection(direction.normalized);
                 }
             }
             mouseStartPosition.z = -1f;
@@ -93,7 +93,7 @@ public class ShipOrbit : MonoBehaviour
     {
         angle += degreesPerSecond * directionModifier * Mathf.Deg2Rad * Time.deltaTime;
         Vector3 shipToPlanetNormal = Utils.Vector2FromRadians(angle);
-        Vector3 position = shipToPlanetNormal * planet.radius + planet.transform.position;
+        Vector3 position = shipToPlanetNormal * 1f /*planet.radius*/ + planet.transform.position;
 
         Vector3 deltaPosition = position - transform.position;
         transform.position = position;
