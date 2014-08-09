@@ -4,9 +4,18 @@ using System;
 // Planets contain information regarding how to slingshot them
 public class Planet : MonoBehaviour
 {
-    public float gravitationalForce;
+    public float turnForce;
+    public float speedForce;
 
     private bool shipInRange = false;
+
+    public float radius
+    {
+        get
+        {
+            return collider2D.bounds.extents.y;
+        }
+    }
 
     void Start()
     {
@@ -41,8 +50,10 @@ public class Planet : MonoBehaviour
         Ship ship = GameManager.instance.ship;
         Vector3 shipToPlanet = transform.position - ship.transform.position;
         float distanceSquared = shipToPlanet.sqrMagnitude;
-        float force = gravitationalForce / distanceSquared;
-        ship.SetGravityModifier(force);
+        float turn = turnForce/ distanceSquared;
+        float angle = Mathf.Atan2(shipToPlanet.y, shipToPlanet.x);
+        float speed = speedForce / distanceSquared;
+        ship.UpdateGravityEffect(angle, turn, speed);
     }
 
     void OnShipEnterRange()

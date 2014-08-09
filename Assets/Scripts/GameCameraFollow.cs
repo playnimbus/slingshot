@@ -27,8 +27,6 @@ public class GameCameraFollow : MonoBehaviour
         update = false;
 
         Vector3 startPosition = transform.position;
-        Quaternion startRotation = transform.rotation;
-        Quaternion endRotation = Quaternion.identity;
         float startHeight = transform.position.z;
 
         float time = 0;
@@ -40,11 +38,9 @@ public class GameCameraFollow : MonoBehaviour
             float lerpedHeight = Mathf.Lerp(startHeight, height, percent);
             Vector3 targetPosition = ship.transform.position;
             Vector3 lerpedPosition = Vector3.Lerp(startPosition, targetPosition, percent);
-            Quaternion lerpedRotation = Quaternion.Lerp(startRotation, endRotation, percent);
 
             lerpedPosition.z = lerpedHeight;
             transform.position = lerpedPosition;
-            transform.rotation = lerpedRotation;
 
             yield return null;
         }

@@ -5,16 +5,27 @@ using System.Collections;
 public class ShipMovement : MonoBehaviour
 {
     [Range(0, 1)] public float accelerationModifier;
-    public float minSpeed = 1f;
-    public float maxSpeed = 10f;
-    
+    public float minSpeed = 5f;
+    public float minTurnSpeed;
+
     private float speed = 5f;
     private float angle = Mathf.PI / 2f;
-    private float angleDelta = 0f;
+
+    private float turnSpeed;
+
+    private Plane movementPlane;
+
+    void Start()
+    {
+        turnSpeed = minTurnSpeed;
+        movementPlane = new Plane(Vector3.back, Vector3.zero);
+    }
     
     private void FixedUpdate()
     {
         HandleInput();
+
+        angle = WrapAngle(angle);
         Move();
     }
 
@@ -22,26 +33,34 @@ public class ShipMovement : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
-            Vector3 viewportPoint = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-
+            /*Vector3 viewportPoint = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+            
             if (viewportPoint.x < 0.5f)
             {
-                angleDelta += accelerationModifier * Time.fixedDeltaTime;
+                angle += turnSpeed * Time.fixedDeltaTime;
             }
             else
             {
-                angleDelta -= accelerationModifier * Time.fixedDeltaTime;
+                angle -= turnSpeed * Time.fixedDeltaTime;
+            }*/
+
+            Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            float distance;
+            if (movementPlane.Raycast(inputRay, out distance))
+            {
+                Vector3 worldPoint = inputRay.GetPoint(distance);
+                Vector3 shipToInput = worldPoint - transform.position;
+                float angle = Mathf.Atan2(shipToInput.y, shipToInput.x);
+                TurnTowards(angle, turnSpeed);
             }
         }
-        else
-        {
-            angleDelta = Mathf.MoveTowards(angleDelta, 0, accelerationModifier * Time.fixedDeltaTime);
-        }
+    }
 
-        angleDelta = Mathf.Clamp(angleDelta, -Time.fixedDeltaTime * Mathf.PI / 2f, Time.fixedDeltaTime * Mathf.PI / 2f);
-        angle += angleDelta;
+    private float WrapAngle(float angle)
+    {
         while (angle < 0f) angle += Mathf.PI * 2;
         while (angle > Mathf.PI * 2) angle -= Mathf.PI * 2;
+        return angle;
     }
 
     private void Move()
@@ -55,8 +74,20 @@ public class ShipMovement : MonoBehaviour
         transform.up = positionDelta;
     }
 
-    public void SetSpeedModifier(float value)
+    public void TurnTowards(float angle, float turnSpeed)
     {
-        speed = Mathf.Clamp(speed, minSpeed, maxSpeed);
+        while (angle < this.angle) angle += Mathf.PI * 2f;
+        if (angle - this.angle > Mathf.PI) angle -= Mathf.PI * 2f;
+        this.angle = Mathf.MoveTowards(this.angle, angle, turnSpeed * Time.fixedDeltaTime);
+    }
+
+    public void SetTurnSpeed(float value)
+    {
+        turnSpeed = Mathf.Max(value, minTurnSpeed);
+    }
+
+    public void SetSpeed(float value)
+    {
+        speed = Mathf.Max(minSpeed, value);
     }
 }

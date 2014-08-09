@@ -4,7 +4,8 @@ using System.Collections;
 public class GameCameraOrbit : MonoBehaviour
 {
     public float positioningTime;
-    public float minHeight;
+    public float planetBufferSize;
+    public float shipBufferSize;
 
     private Planet planet;
     private bool update;
@@ -54,11 +55,12 @@ public class GameCameraOrbit : MonoBehaviour
         Ship ship = GameManager.instance.ship;
         
         float x = planet.transform.position.x;
-        float y = (planet.transform.position.y + ship.transform.position.y) / 2f;
+        float y = (planet.transform.position.y + planet.radius + ship.transform.position.y) / 2f;
 
-        float heightFit = HeightFit(Mathf.Abs(planet.transform.position.y - ship.transform.position.y));
-        float widthFit = WidthFit(Mathf.Abs(planet.transform.position.x - ship.transform.position.x) * 2f);
-        float z = Mathf.Min(heightFit, widthFit, minHeight);
+        float heightFit = HeightFit(Mathf.Abs(planet.transform.position.y - ship.transform.position.y) + planet.radius + planetBufferSize);
+        float widthFit = WidthFit((Mathf.Abs(planet.transform.position.x - ship.transform.position.x) + shipBufferSize) * 2f);
+        float planetWidthFit = WidthFit((planet.radius + planetBufferSize) * 2f);
+        float z = Mathf.Min(heightFit, widthFit, planetWidthFit);
 
         return new Vector3(x, y, z);
     }
@@ -71,7 +73,7 @@ public class GameCameraOrbit : MonoBehaviour
 
     private float WidthFit(float xSpread)
     {
-        float angle = Mathf.Atan(Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad / 2f) * camera.aspect);
-        return -((xSpread / 2f) / Mathf.Tan(angle));
+        float angle = Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad / 2f) * camera.aspect;
+        return -((xSpread / 2f) / angle);
     }
 }
