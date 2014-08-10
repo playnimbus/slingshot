@@ -43,7 +43,7 @@ public class GameCameraOrbit : MonoBehaviour
         update = true;
     }
 
-    void FixedUpdate()
+    void Update() 
     {
         if (update) transform.position = Vector3.Lerp(transform.position, CalculateDesiredPosition(), 0.1f);
     }
