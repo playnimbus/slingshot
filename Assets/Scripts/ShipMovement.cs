@@ -32,6 +32,7 @@ public class ShipMovement : MonoBehaviour
                 Vector3 position = ray.GetPoint(distance);
                 if(collider2D is BoxCollider2D && (collider2D as BoxCollider2D).OverlapPoint(position))
                 {
+                    StopAllCoroutines();
                     StartCoroutine(BuildPathCoroutine(transform.position));
                 }
             }
@@ -87,7 +88,7 @@ public class ShipMovement : MonoBehaviour
         while (continueOnPath && percent <= 1)
         {
             percent += (speed / pathLength) * Time.deltaTime;
-            Vector3 position = Approx(path, percent);
+            Vector3 position = Interp(path, percent);
             Vector3 newUp = position - transform.position;
             float turnAngle = Vector3.Angle(newUp, transform.up);
 
@@ -162,28 +163,22 @@ public class ShipMovement : MonoBehaviour
         return c12;
     }
 
-    private Vector3 Approx(Vector3[] pts, float percent)
+    private Vector3 Approx(Vector3[] pts, float percent, int lookAhead = 4)
     {
-        int numSections = pts.Length - 3;
-        int currPt = Mathf.Min(Mathf.FloorToInt(percent * (float)numSections), numSections - 1);
-        float u = percent * (float)numSections - (float)currPt;
+        Vector3[] path = pts;       
 
-        Vector3 p0 = pts[currPt];
-        Vector3 p1 = pts[currPt + 1];
-        Vector3 p2 = pts[currPt + 2];
-        Vector3 p3 = pts[currPt + 3];
+        while(path.Length > 1)
+        {
+            Vector3[] reducedPath = new Vector3[path.Length - 1];
 
-        Vector3 cp0 = p1 + (p2 - p0).normalized * (pathSpacing / 4f);
-        Vector3 cp1 = p2 + (p1 - p3).normalized * (pathSpacing / 4f);
+            for (int i = 0; i < reducedPath.Length; i++)
+            {
+                reducedPath[i] = Vector3.Lerp(path[i], path[i + 1], percent);
+            }
 
-        Vector3 l0 = Vector3.Lerp(p1, cp0, u);
-        Vector3 l1 = Vector3.Lerp(cp0, cp1, u);
-        Vector3 l2 = Vector3.Lerp(cp1, p2, u);
+            path = reducedPath;
+        }
 
-        Vector3 c0 = Vector3.Lerp(l0, l1, u);
-        Vector3 c1 = Vector3.Lerp(l1, l2, u);
-
-        Vector3 f = Vector3.Lerp(c0, c1, u);
-        return f;
+        return path[0];
     }
 }
