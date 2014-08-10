@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        camera.FollowShip(_ship);
+
     }
 
     void Update()

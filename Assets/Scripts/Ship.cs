@@ -19,10 +19,8 @@ public class Ship : MonoBehaviour
         movement = GetComponent<ShipMovement>();
     }
 
-    public void UpdateGravityEffect(float angle, float turnSpeed, float speed)
+    public void ChangeSpeed(float value)
     {
-        movement.TurnTowards(angle, turnSpeed);
-        movement.SetTurnSpeed(turnSpeed);
-        movement.SetSpeed(speed);
+        movement.SetSpeed(value);
     }
 }
