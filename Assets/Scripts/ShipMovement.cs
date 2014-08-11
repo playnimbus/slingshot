@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
 // Handles moving the ship forward in one direction
 public class ShipMovement : MonoBehaviour
@@ -48,6 +49,7 @@ public class ShipMovement : MonoBehaviour
         
         pathRenderer.SetVertexCount(1);
         pathRenderer.SetPosition(0, startPosition);
+        int pathRendererCount = 1;
 
         while(Input.GetMouseButton(0))
         {
@@ -61,8 +63,17 @@ public class ShipMovement : MonoBehaviour
                 {
                     path.Add(currentPosition);
                     previousPosition = currentPosition;
-                    pathRenderer.SetVertexCount(path.Count);
-                    pathRenderer.SetPosition(path.Count - 1, currentPosition);
+                    if (path.Count >= 4)
+                    {
+                        Vector3[] pathEnd = path.GetRange(path.Count - 4, 4).ToArray();
+                        for (float f = 0f; f <= 1f; f += 0.1f)
+                        {
+                            Vector3 rendererPosition = Interp(pathEnd, f);
+                            pathRendererCount++;
+                            pathRenderer.SetVertexCount(pathRendererCount);
+                            pathRenderer.SetPosition(pathRendererCount - 1, rendererPosition);
+                        }
+                    }
                 }
             }
 
@@ -87,7 +98,17 @@ public class ShipMovement : MonoBehaviour
 
         while (continueOnPath && percent <= 1)
         {
-            percent += (speed / pathLength) * Time.deltaTime;
+
+            // For smooth speed
+            float length = 0f;
+            float maxOverage = 0.01f;
+            for (float f = percent; f < Mathf.Min(percent + 0.1f, 1f); f += 0.01f)
+            {
+                length += Vector3.Distance(Interp(path, f), Interp(path, f + 0.01f));
+                maxOverage = (f + 0.01f) - percent;
+            }
+            percent += (speed / (length * (1f / maxOverage))) * Time.deltaTime;
+
             Vector3 position = Interp(path, percent);
             Vector3 newUp = position - transform.position;
             float turnAngle = Vector3.Angle(newUp, transform.up);
