@@ -9,16 +9,22 @@ public class GameManager : MonoBehaviour
         get { return _instance; }
     }
 
-    private SceneManager _scene;
-    private GameCamera _camera;
-    private Ship _ship;
+    private SceneManager scene;
+    private new GameCamera camera;
+    private Ship ship;
 
     void Awake()
     {
         _instance = this;
-        _scene = FindObjectOfType<SceneManager>();
-        _camera = FindObjectOfType<GameCamera>();
-        _ship = FindObjectOfType<Ship>();
+        scene = FindObjectOfType<SceneManager>();
+        camera = FindObjectOfType<GameCamera>();
+        ship = FindObjectOfType<Ship>();
+    }
+
+    void Start()
+    {
+        scene.ship = ship;
+        camera.ship = ship;
     }
 
     void OnDestroy()

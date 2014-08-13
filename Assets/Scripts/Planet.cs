@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SceneManager : MonoBehaviour 
+public class Planet : MonoBehaviour
 {
-    public Ship ship { get; set; }
+    public float radius { get; set; }
 
 	// Use this for initialization
 	void Start () {

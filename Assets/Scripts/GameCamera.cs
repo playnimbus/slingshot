@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameCamera : MonoBehaviour {
+public class GameCamera : MonoBehaviour 
+{
+    public Ship ship { get; set; }
+
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+    {
 	
 	}
 	
