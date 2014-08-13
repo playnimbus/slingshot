@@ -23,12 +23,39 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        scene.OnPlanetCreated += PlanetCreated;
+        scene.OnPlanetDestroyed += PlanetDestroyed;
         scene.ship = ship;
         camera.ship = ship;
+        camera.ShipExitedPlanetRange(null);
     }
 
     void OnDestroy()
     {
         _instance = null;
+    }
+    
+    void PlanetCreated(Planet planet)
+    {
+        planet.OnShipEnteredRange += ShipEnteredPlanetRange;
+        planet.OnShipExitedRange += ShipExitedPlanetRange;
+    }
+
+    void PlanetDestroyed(Planet planet)
+    {
+        planet.OnShipEnteredRange -= ShipEnteredPlanetRange;
+        planet.OnShipExitedRange -= ShipExitedPlanetRange;
+    }
+
+    void ShipEnteredPlanetRange(Planet planet)
+    {
+        ship.EnteredPlanetRange(planet);
+        camera.ShipEnteredPlanetRange(planet);
+    }
+
+    void ShipExitedPlanetRange(Planet planet)
+    {
+        ship.ExitedPlanetRange(planet);
+        camera.ShipExitedPlanetRange(planet);
     }
 }

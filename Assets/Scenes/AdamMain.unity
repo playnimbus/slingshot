@@ -346,6 +346,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f97d34b12d7765349a8f2b4c8c474ce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  planetPrefab: {fileID: 11400000, guid: 1ca6be9b141c1a040a7fedd8c5509107, type: 2}
 --- !u!4 &707688684
 Transform:
   m_ObjectHideFlags: 0
@@ -383,7 +384,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 882678940}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3.87779951, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1686362368}
@@ -400,7 +401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76573c006edc73c459ff278205a53277, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6.28000021
+  speed: 1
 --- !u!60 &882678943
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -461,6 +462,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6894deaa82eb78f49a68b379a8f75041, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  planetViewHeight: -25
+  shipViewHeight: -15
 --- !u!81 &1205347954
 AudioListener:
   m_ObjectHideFlags: 0
@@ -507,7 +510,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1205347952}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
