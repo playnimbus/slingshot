@@ -1,28 +1,15 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections;
 
-// Interface into controlling the camera
-public class GameCamera : MonoBehaviour
-{
-    private GameCameraFollow follow;
-    private GameCameraOrbit orbit;
+public class GameCamera : MonoBehaviour {
 
-    void Awake()
-    {
-        follow = GetComponent<GameCameraFollow>();
-        orbit = GetComponent<GameCameraOrbit>();
-    }
-
-    public void FollowShip(Ship ship)
-    {
-        orbit.Deactivate();
-        follow.Activate(ship);        
-    }
-
-    public void ShowPlanet(Planet planet)
-    {
-        follow.Deactivate();
-        orbit.Activate(planet);
-    }
+	// Use this for initialization
+	void Start () {
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+	
+	}
 }

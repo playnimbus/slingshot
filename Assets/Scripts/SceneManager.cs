@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-// Responsible for spawinging planets, managing obstacles, placing pickups
-public class SceneManager : MonoBehaviour
-{
-    public Planet planet;
-    public Asteroid asteroid;
+public class SceneManager : MonoBehaviour {
+
+	// Use this for initialization
+	void Start () {
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+	
+	}
 }
