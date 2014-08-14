@@ -22,7 +22,6 @@ public class SceneManager : MonoBehaviour
 
     void CreateRandomPlanet( int x, int y)
     {
-        if (UnityEngine.Random.value > 0.5f) return;
         Planet planet = Instantiate(planetPrefab, (Vector2)new Vector3(x * 20, y * 20) + UnityEngine.Random.insideUnitCircle * UnityEngine.Random.Range(0, 10), Quaternion.identity) as Planet;
         if(OnPlanetCreated != null) OnPlanetCreated(planet);
     }

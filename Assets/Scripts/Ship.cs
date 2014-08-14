@@ -57,14 +57,15 @@ public class Ship : MonoBehaviour
 
         float currentRadius = startRadius;
         float lerpModifier = Mathf.Abs(transform.InverseTransformDirection(positionDiff.y, -positionDiff.x, 0f).normalized.x);
-        print(lerpModifier);
-        float radiusLerp =  (speed * Time.fixedDeltaTime) / (startRadius - planet.orbitRadius);
-        radiusLerp *= lerpModifier * lerpModifier;
+        float radiusLerp = (lerpModifier * speed * Time.fixedDeltaTime) / (startRadius - planet.orbitRadius);
+
+        float targetRadius = planet.orbitRadius;
 
         bool startedLaunch = false;
         while (true)
         {
             float percent = 1f - ((currentRadius - planet.orbitRadius) / (startRadius - planet.orbitRadius));
+            percent = Mathf.Lerp(percent, 1f, 1f - lerpModifier);
 
             currentRadius = Mathf.Lerp(currentRadius, planet.orbitRadius, radiusLerp);
             float angleDelta = percent * (speed / currentRadius);
@@ -80,6 +81,7 @@ public class Ship : MonoBehaviour
             {
                 speed = Mathf.Lerp(speed, maxSpeed, accelerationLerp);
                 startedLaunch = true;
+                targetRadius = 0f;
             }
             else
             {
