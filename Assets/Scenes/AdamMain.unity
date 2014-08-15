@@ -403,9 +403,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minSpeed: 10
   maxSpeed: 25
-  accelerationLerp: .00999999978
+  accelerationLerp: .0199999996
   decelerationLerp: .00999999978
   speed: 0
+  direction: 0
 --- !u!60 &882678943
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -467,7 +468,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   planetViewHeight: -40
+  planetTimeToCenter: 1.75
   shipViewHeight: -20
+  shipTimeToCenter: 1.25
 --- !u!81 &1205347954
 AudioListener:
   m_ObjectHideFlags: 0
