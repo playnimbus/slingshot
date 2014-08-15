@@ -5,30 +5,29 @@ public class Planet : MonoBehaviour
 {
     public event Action<Planet> OnShipEnteredRange;
     public event Action<Planet> OnShipExitedRange;
+    public event Action<Planet> OnShipCollided;
 
     public float orbitRadius;
+    public float radius;
 
     private bool _mouseDown = false;
     public bool mouseDown { get { return _mouseDown; } }
 
-    void OnTriggerEnter2D(Collider2D otherCollider)
+    void Start()
     {
-        Ship ship = otherCollider.gameObject.GetComponent<Ship>();
-        if (ship != null)
-        {
-            if (OnShipEnteredRange != null) OnShipEnteredRange(this);
-        }
+        DetectShip detect = GetComponentInChildren<DetectShip>();
+        detect.OnShipEnterRange += () => { if (OnShipEnteredRange != null) OnShipEnteredRange(this); };
+        detect.OnShipExitRange += () => { if (OnShipExitedRange != null) OnShipExitedRange(this); };
     }
 
-    void OnTriggerExit2D(Collider2D otherCollider)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        Ship ship = otherCollider.gameObject.GetComponent<Ship>();
-        if (ship != null)
+        if(collision.gameObject.GetComponent<Ship>() != null)
         {
-            if (OnShipExitedRange != null) OnShipExitedRange(this);
+            if (OnShipCollided != null) OnShipCollided(this);
         }
     }
-
+    
     void OnMouseDown()
     {
         _mouseDown = true;

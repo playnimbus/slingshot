@@ -39,12 +39,14 @@ public class GameManager : MonoBehaviour
     {
         planet.OnShipEnteredRange += ShipEnteredPlanetRange;
         planet.OnShipExitedRange += ShipExitedPlanetRange;
+        planet.OnShipCollided += ShipCollideWithPlanet;
     }
 
     void PlanetDestroyed(Planet planet)
     {
         planet.OnShipEnteredRange -= ShipEnteredPlanetRange;
         planet.OnShipExitedRange -= ShipExitedPlanetRange;
+        planet.OnShipCollided -= ShipCollideWithPlanet;
     }
 
     void ShipEnteredPlanetRange(Planet planet)
@@ -57,5 +59,18 @@ public class GameManager : MonoBehaviour
     {
         ship.ExitedPlanetRange(planet);
         camera.ShipExitedPlanetRange(planet);
+    }
+
+    void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.LoadLevel(Application.loadedLevel);
+        }
+    }
+
+    void ShipCollideWithPlanet(Planet planet)
+    {
+        ship.CrashedIntoPlanet(planet);
     }
 }
