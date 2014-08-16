@@ -79,34 +79,12 @@ public class GameCamera : MonoBehaviour
 
             yield return wait;   
         }
-
-        float planetPressedTime = 0f;
-        float timeAcceleration = 1f;
-        bool spinStarted = false;
-
+        
         while(true)
         {
-            Vector2 offset = new Vector2();
-            if (planet.mouseDown)
-            {
-                spinStarted = true;
-                planetPressedTime += Time.fixedDeltaTime * timeAcceleration * ship.direction;
-                timeAcceleration *= 1.01f;
-                offset.x = Mathf.Cos(planetPressedTime);
-                offset.y = Mathf.Sin(planetPressedTime);
-            }
-            if(!planet.mouseDown && spinStarted)
-            {
-                planetPressedTime += Time.fixedDeltaTime * timeAcceleration * ship.direction;
-                timeAcceleration = Mathf.Lerp(timeAcceleration, 0f, 0.1f);
-                offset.x = Mathf.Cos(planetPressedTime);
-                offset.y = Mathf.Sin(planetPressedTime);
-            }
 
             Vector3 targetPosition = planet.transform.position;
             targetPosition.z = planetViewHeight;
-            targetPosition.x += offset.x;
-            targetPosition.y += offset.y;
             transform.position = targetPosition;
 
             yield return wait;
