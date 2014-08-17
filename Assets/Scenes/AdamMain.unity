@@ -348,9 +348,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetPrefab: {fileID: 11400000, guid: 1ca6be9b141c1a040a7fedd8c5509107, type: 2}
   firstPlanetTransform: {fileID: 1772469020}
-  maxDistance: 15
-  minDistance: 10
-  maxAngle: 20
+  minVerticalDistance: 0
+  boarder: 5
+  minDistanceBetweenPlanets: 15
 --- !u!4 &707688684
 Transform:
   m_ObjectHideFlags: 0

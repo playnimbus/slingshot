@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class SceneManager : MonoBehaviour 
 {
@@ -7,76 +8,96 @@ public class SceneManager : MonoBehaviour
     public Transform firstPlanetTransform;
     public Ship ship { get; set; }
 
-    public float minDistance;
-    public float maxDistance;    
-    public float maxAngle;
-    public int depth;
+    public float minVerticalDistance;
+    public float boarder;
+    public float minDistanceBetweenPlanets;
 
     public event Action<Planet> OnPlanetCreated;
     public event Action<Planet> OnPlanetDestroyed;
 
+    private List<Planet> planets;
+
     void Start()
     {
-        Planet initialPlanet = CreatePlanetAt(firstPlanetTransform.position.x, firstPlanetTransform.position.y);
-        PlanetNode root = new PlanetNode();
-        root.planet = initialPlanet;
-        CreatePlanets(root, 0, depth);
+        planets = new List<Planet>();
+        OnPlanetCreated += (planet) => planets.Add(planet);
+        OnPlanetDestroyed += (planet) => planets.Remove(planet);
+        //OnPlanetCreated += (planet) => { if (UnityEngine.Random.value < 0.5f) CreateTargetPlanets(planet); };
+        OnPlanetCreated += (planet) => { planet.OnShipEnteredRange += CreateTargetPlanets; };
+
+        Planet initialPlanet = CreatePlanet(firstPlanetTransform.position.x, firstPlanetTransform.position.y);
+        //CreateTargetPlanets(initialPlanet);
     }
 
-    void CreatePlanets(PlanetNode node, int currentDepth, int maxDepth)
+    private void CreateTargetPlanets(Planet planet)
     {
-        if (currentDepth >= maxDepth) return;
-        if (node.north == null)
+        //planets.ForEach((p) => { if (p != planet && p.transform.position.y < planet.transform.position.y) { OnPlanetDestroyed(p); Destroy(p.gameObject); } });
+        //planets.RemoveAll((p) => { return p != planet && p.transform.position.y < planet.transform.position.y; });
+
+        Rect cameraRect = GameManager.instance.gameCamera.GetRect(planet);
+        cameraRect.yMin = planet.transform.position.y;
+        
+        Rect leftRect = new Rect(cameraRect);
+        leftRect.width = leftRect.width / 2;
+        Rect rightRect = new Rect(leftRect);
+        rightRect.x = rightRect.x + rightRect.width;
+        leftRect = ShrinkDimensions(leftRect, boarder);
+        rightRect = ShrinkDimensions(rightRect, boarder);
+
+        Planet leftPlanet = planets.Find(p => p != planet && leftRect.Contains(p.transform.position)) ;;
+        bool leftHasPlanet = leftPlanet != null;
+
+
+        Planet rightPlanet = planets.Find(p => p != planet && rightRect.Contains(p.transform.position));
+        bool rightHasPlanet = rightPlanet != null;
+        
+
+        if (!leftHasPlanet || !rightHasPlanet)
         {
-            PlanetNode north = new PlanetNode();
-            north.south = node;
-            node.north = north;
-            float angle = ((UnityEngine.Random.value - 0.5f) * maxAngle * 2f + 90f) * Mathf.Rad2Deg;
-            float distance = Mathf.Lerp(minDistance, maxDistance, UnityEngine.Random.value);
-            float x = Mathf.Cos(angle) * distance;
-            float y = Mathf.Sin(angle) * distance;
-            north.planet = CreatePlanetAt(node.x + x, node.y + y);
-            CreatePlanets(north, currentDepth + 1, maxDepth);
+            bool twoPlanets = UnityEngine.Random.value < 0.5f;
+            if (!twoPlanets)
+            {
+                if (!rightHasPlanet && !leftHasPlanet)
+                {
+                    bool left = UnityEngine.Random.value < 0.5f;
+                    if (left) leftPlanet = CreatePlanet(leftRect);
+                    else rightPlanet = CreatePlanet(rightRect);
+                }
+            }
+            else
+            {
+
+                if (!leftHasPlanet) leftPlanet = CreatePlanet(leftRect);
+                if (!rightHasPlanet) rightPlanet = CreatePlanet(rightRect);
+            }
         }
-        if (node.east == null)
-        {
-            PlanetNode east = new PlanetNode();
-            east.west = node;
-            node.east = east;
-            float angle = ((UnityEngine.Random.value - 0.5f) * maxAngle * 2f + 0f) * Mathf.Rad2Deg;
-            float distance = Mathf.Lerp(minDistance, maxDistance, UnityEngine.Random.value);
-            float x = Mathf.Cos(angle) * distance;
-            float y = Mathf.Sin(angle) * distance;
-            east.planet = CreatePlanetAt(node.x + x, node.y + y);
-            CreatePlanets(east, currentDepth + 1, maxDepth);
-        }
-        if (node.south == null)
-        {
-            PlanetNode south = new PlanetNode();
-            south.north = node;
-            node.south = south;
-            float angle = ((UnityEngine.Random.value - 0.5f) * maxAngle * 2f + 270f) * Mathf.Rad2Deg;
-            float distance = Mathf.Lerp(minDistance, maxDistance, UnityEngine.Random.value);
-            float x = Mathf.Cos(angle) * distance;
-            float y = Mathf.Sin(angle) * distance;
-            south.planet = CreatePlanetAt(node.x + x, node.y + y);
-            CreatePlanets(south, currentDepth + 1, maxDepth);
-        }
-        if (node.west == null)
-        {
-            PlanetNode west = new PlanetNode();
-            west.east = node;
-            node.west = west;
-            float angle = ((UnityEngine.Random.value - 0.5f) * maxAngle * 2f + 180f) * Mathf.Rad2Deg;
-            float distance = Mathf.Lerp(minDistance, maxDistance, UnityEngine.Random.value);
-            float x = Mathf.Cos(angle) * distance;
-            float y = Mathf.Sin(angle) * distance;
-            west.planet = CreatePlanetAt(node.x + x, node.y + y);
-            CreatePlanets(west, currentDepth + 1, maxDepth);
-        }
+
+        //if (leftPlanet != null) planet.OnShipEnteredRange += p => { CreateTargetPlanets(leftPlanet); };
+        //if (rightPlanet != null) planet.OnShipEnteredRange += p => { CreateTargetPlanets(rightPlanet); };
     }
 
-    private Planet CreatePlanetAt(float x, float y)
+    private Planet CreatePlanet(Rect bounds)
+    {
+        float x, y;
+        bool success;
+        do
+        {
+            x = Mathf.Lerp(bounds.xMin, bounds.xMax, UnityEngine.Random.value);
+            y = Mathf.Lerp(bounds.yMin, bounds.yMax, UnityEngine.Random.value);
+
+            success = true;
+            foreach(var p in this.planets)
+            {
+                if (p != null && Vector3.Distance(p.transform.position, new Vector3(x, y)) < minDistanceBetweenPlanets)
+                    success = false;
+            }
+        }
+        while (!success);
+
+        return CreatePlanet(x, y);
+    }
+    
+    private Planet CreatePlanet(float x, float y)
     {
         Vector3 position = new Vector3(x, y);
         Planet planet = Instantiate(planetPrefab, position, Quaternion.identity) as Planet;
@@ -84,16 +105,13 @@ public class SceneManager : MonoBehaviour
         if (OnPlanetCreated != null) OnPlanetCreated(planet);
         return planet;
     }
-
-    private class PlanetNode
+    
+    private Rect ShrinkDimensions(Rect rect, float amount)
     {
-        public Planet planet;
-        public PlanetNode north;
-        public PlanetNode east;
-        public PlanetNode south;
-        public PlanetNode west;
-
-        public float x { get { return planet.transform.position.x; } }
-        public float y { get { return planet.transform.position.y; } }
+        rect.xMin = rect.xMin + amount;
+        rect.yMin = rect.yMin + amount;
+        rect.xMax = rect.xMax - amount;
+        rect.yMax = rect.yMax - amount;
+        return rect;
     }
 }

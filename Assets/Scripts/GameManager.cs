@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     private new GameCamera camera;
     private Ship ship;
 
+    public GameCamera gameCamera { get { return camera; } }
+
     void Awake()
     {
         _instance = this;
@@ -61,16 +63,31 @@ public class GameManager : MonoBehaviour
         camera.ShipExitedPlanetRange(planet);
     }
 
+    void ShipCollideWithPlanet(Planet planet)
+    {
+        ship.CrashedIntoPlanet(planet);
+    }
+
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.LoadLevel(Application.loadedLevel);
         }
     }
 
-    void ShipCollideWithPlanet(Planet planet)
+#if UNITY_IPHONE
+
+    void OnGUI()
     {
-        ship.CrashedIntoPlanet(planet);
+        if(Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            if(GUI.Button(new Rect(0, 0, 200, 200), "Restart"))
+            {
+                Application.LoadLevel(Application.loadedLevel);
+            }
+        }
     }
+
+#endif
 }

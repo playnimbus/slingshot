@@ -65,6 +65,7 @@ public class GameCamera : MonoBehaviour
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
 
         Vector3 startPosition = transform.position;
+        Vector3 targetPosition = GetCameraPosition(planet);
         float time = 0f;
 
         while (time < planetTimeToCenter)
@@ -72,7 +73,6 @@ public class GameCamera : MonoBehaviour
             time += Time.fixedDeltaTime;
             float percent = CubicEaseInOut(time, 0f, 1f, planetTimeToCenter);
 
-            Vector3 targetPosition = planet.transform.position;
             targetPosition.z = planetViewHeight;
             Vector3 lerpedPosition = Vector3.Lerp(startPosition, targetPosition, percent);
             transform.position = lerpedPosition;
@@ -82,9 +82,6 @@ public class GameCamera : MonoBehaviour
         
         while(true)
         {
-
-            Vector3 targetPosition = planet.transform.position;
-            targetPosition.z = planetViewHeight;
             transform.position = targetPosition;
 
             yield return wait;
@@ -112,4 +109,48 @@ public class GameCamera : MonoBehaviour
 
         return Vector3.zero;
     }
+
+    #region Rectangle
+
+    private Vector3 GetCameraPosition(Planet planet)
+    {
+        Vector3 position = new Vector3();
+        position.z = planetViewHeight;
+        position.x = planet.transform.position.x;
+        position.y = planet.transform.position.y - (planet.orbitRadius + 1f) + Height(planetViewHeight) / 2f;
+        return position;
+    }
+
+    public Rect GetRect(Planet planet, bool debugDraw = false)
+    {
+        Vector3 position = GetCameraPosition(planet);        
+        float left = position.x - Width(planetViewHeight) / 2f;
+        float top = position.y - Height(planetViewHeight) / 2f;
+        float width = Width(planetViewHeight);
+        float height = Height(planetViewHeight);
+
+        Rect rect = new Rect(left, top, width, height);
+        if (debugDraw)
+        {
+            Debug.DrawLine(rect.min, rect.min + Vector2.up * height, Color.cyan, 5f);
+            Debug.DrawLine(rect.min, rect.min + Vector2.right * width, Color.cyan, 5f);
+            Debug.DrawLine(rect.max, rect.max - Vector2.up * height, Color.cyan, 5f);
+            Debug.DrawLine(rect.max, rect.max - Vector2.right * width, Color.cyan, 5f);
+        }
+        return rect;
+    }
+
+    private float Height(float cameraHeight)
+    {
+        float angle = camera.fieldOfView * Mathf.Deg2Rad / 2f;
+        return Mathf.Abs(cameraHeight * Mathf.Tan(angle) * 2f);
+    }
+
+    private float Width(float cameraHeight)
+    {
+        float angle = Mathf.Atan(Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad / 2f) * camera.aspect);
+        return Mathf.Abs(cameraHeight * Mathf.Tan(angle) * 2f);
+    }
+
+    #endregion
 }
