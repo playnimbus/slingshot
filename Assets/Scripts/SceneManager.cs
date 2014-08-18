@@ -80,8 +80,11 @@ public class SceneManager : MonoBehaviour
     {
         float x, y;
         bool success;
+        int tries = 0;
         do
         {
+            if (tries++ > 1000) Debug.Break();
+
             x = Mathf.Lerp(bounds.xMin, bounds.xMax, UnityEngine.Random.value);
             y = Mathf.Lerp(bounds.yMin, bounds.yMax, UnityEngine.Random.value);
 

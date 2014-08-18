@@ -139,7 +139,7 @@ public class Ship : MonoBehaviour
 
     }
 
-    public void CrashedIntoPlanet(Planet planet)
+    public void CrashedIntoPlanet(GameObject @object)
     {
         StopAllCoroutines();
         rigidbody2D.AddRelativeForce(Random.insideUnitCircle, ForceMode2D.Impulse);

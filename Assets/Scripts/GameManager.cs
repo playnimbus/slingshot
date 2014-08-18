@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     private Ship ship;
 
     public GameCamera gameCamera { get { return camera; } }
+    public Ship gameShip { get { return ship; } }
 
     void Awake()
     {
@@ -37,18 +38,18 @@ public class GameManager : MonoBehaviour
         _instance = null;
     }
     
-    void PlanetCreated(Planet planet)
+    void PlanetCreated(Planet planet) 
     {
         planet.OnShipEnteredRange += ShipEnteredPlanetRange;
         planet.OnShipExitedRange += ShipExitedPlanetRange;
-        planet.OnShipCollided += ShipCollideWithPlanet;
+        planet.OnShipCollided += ShipCollideWithObject;
     }
 
     void PlanetDestroyed(Planet planet)
     {
         planet.OnShipEnteredRange -= ShipEnteredPlanetRange;
         planet.OnShipExitedRange -= ShipExitedPlanetRange;
-        planet.OnShipCollided -= ShipCollideWithPlanet;
+        planet.OnShipCollided -= ShipCollideWithObject;
     }
 
     void ShipEnteredPlanetRange(Planet planet)
@@ -63,9 +64,9 @@ public class GameManager : MonoBehaviour
         camera.ShipExitedPlanetRange(planet);
     }
 
-    void ShipCollideWithPlanet(Planet planet)
+    void ShipCollideWithObject(GameObject @object)
     {
-        ship.CrashedIntoPlanet(planet);
+        ship.CrashedIntoPlanet(@object);
     }
 
     void Update()
